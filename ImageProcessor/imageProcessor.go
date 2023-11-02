@@ -20,6 +20,17 @@ func (f Format) String() string {
 	return FormatStrings[f]
 }
 
+type Direction int
+
+const (
+	Horizontal Direction = iota
+	Vertical
+)
+
+func (d Direction) String() string {
+	return [...]string{"Horizontal", "Vertical"}[d]
+}
+
 type ImageSaveName = string
 
 type ColorCorrection struct {
@@ -44,6 +55,11 @@ type CropOptions struct {
 	Invert *bool
 }
 
+type ConnectOptions struct {
+	Images    []ProcessableImage
+	Direction Direction
+}
+
 // ImageConvertable defines the methods for converting images.
 type ImageConvertable interface {
 	Convert(Img *image.Image, Options *ConvertOptions)
@@ -54,10 +70,21 @@ type ImageCroppeable interface {
 	Crop(Img *image.Image, Options *CropOptions)
 }
 
+// ImageContrastable defines the methods for increasing the contrast of images.
+type ImageContrastable interface {
+	IncreaseContrast(factor *ContrastFactor)
+}
+
+type ImageConnectable interface {
+	Connect(Images []ProcessableImage, Direction *Direction)
+}
+
 // ProcessableImage combines both the conversion and cropping functionality.
 type ProcessableImage interface {
 	ImageConvertable
 	ImageCroppeable
+	ImageContrastable
+	ImageConnectable
 	Save() error
 }
 
